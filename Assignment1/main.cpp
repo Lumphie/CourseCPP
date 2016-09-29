@@ -1,6 +1,5 @@
 #include <iostream>
 #include <fstream>
-#include <cassert>
 
 using namespace std;
 
@@ -82,7 +81,7 @@ int main()
     std::ofstream myOutputFileStream("data.csv");
 
     // Initialize the number of cells.
-    const int numOfCells = 100;
+    const int numOfCells = 250;
 
     // Create an array with the current state of all the cells.
     // First cell gets value 1 the rest gets value 0.
