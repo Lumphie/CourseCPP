@@ -1,3 +1,4 @@
+//#include "stdafx.h" // Uncomment when working with Visual Studio
 #include <iostream>
 #include <fstream>
 
