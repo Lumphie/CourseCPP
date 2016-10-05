@@ -1,5 +1,6 @@
 #include <iostream>
 #include <vector>
+#include "turtle.h"
 
 using namespace std;
 
@@ -14,6 +15,18 @@ int main()
 
     updateSeq(arterialSeq, numOfSequences);
     printSeq(arterialSeq, numOfSequences);
+
+    Turtle turtle;
+    cout << "X: " << turtle.getLocation().xCoord << " Y: " << turtle.getLocation().yCoord << '\n';
+
+    int numOfMoves = 9;
+    for (int index = 0; index < numOfMoves; ++index)
+    {
+        turtle.turn(360/numOfMoves);
+        turtle.moveForward(1);
+        cout << "X: " << turtle.getLocation().xCoord << " Y: " << turtle.getLocation().yCoord <<
+                " alpha: " << turtle.getLocation().orientation << '\n';
+    }
 
     return 0;
 }

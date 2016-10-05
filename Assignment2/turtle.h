@@ -4,19 +4,19 @@
 #include <vector>
 using namespace std;
 
-struct Location
+struct State
 {
     double xCoord = 0;
     double yCoord = 0;
+    double orientation = 0;
 };
 
 class Turtle
 {
 
 private:
-    Location m_Location;
-    double m_orientation;
-    vector<Location> m_locationMemory;
+    State m_State;
+    vector<State> m_StateMemory;
 
 public:
     Turtle();
@@ -24,6 +24,10 @@ public:
     void Reset();
     void moveForward(double steps);
     void turn(double orientation);
+    State getLocation();
+    void addStateToMem(State currentState);
+    void removeStateFromMem();
+
 
 };
 
