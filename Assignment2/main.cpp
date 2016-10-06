@@ -27,21 +27,21 @@ int main()
         cout << "Sequence " << seqNum << ".\n";
         Turtle turtle;
         turtle.followSeq(turtle.readSeqFromFile(myInputFileStream));
-        //vector<State> finalPoints = turtle.getPoints();
+        //vector<Point> finalPoints = turtle.getPoints();
         //cout << finalPoints. << '\n';
-        vector<State> allPoints = turtle.getPoints();
+        vector<Point> allPoints = turtle.getPoints();
 
         int index = 0;
-        for (const State state: allPoints)
+        for (const Point point: allPoints)
         {
-            cout << index + 1 << " X: " << state.xCoord << " Y: " << state.yCoord << '\n';
+            cout << index + 1 << " X: " << point.xCoord << " Y: " << point.yCoord << '\n';
             if (index % 2)
                 cout << '\n';
 
             if (seqNum == 6)
             {
 
-                myOutputFileStream << index + 1 << " " << state.xCoord << " " << state.yCoord << '\n';
+                myOutputFileStream << index + 1 << " " << point.xCoord << " " << point.yCoord << '\n';
                 if (index % 2)
                     myOutputFileStream << '\n';
             }

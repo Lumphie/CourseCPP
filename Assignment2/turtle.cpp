@@ -18,28 +18,30 @@ Turtle::Turtle()
 
 void Turtle::Reset()
 {
-    m_State.xCoord = 0;
-    m_State.yCoord = 0;
-    m_State.orientation = 0;
-    m_StateGoLeftMemory.clear();
+    m_Point.xCoord = 0.0;
+    m_Point.yCoord = 0.0;
+    m_Point.orientation = 0.0;
+    m_PointGoLeftMemory.clear();
+    m_PointMemory.clear();
+    m_Point.stepSize = 1.0;
 
 }
 
 void Turtle::moveForward(double steps = 1.0)
 {
-    m_State.xCoord += steps * cos(TWOPI * (m_State.orientation / 360));
-    m_State.yCoord += steps * sin(TWOPI * (m_State.orientation / 360));
+    m_Point.xCoord += steps * cos(TWOPI * (m_Point.orientation / 360));
+    m_Point.yCoord += steps * sin(TWOPI * (m_Point.orientation / 360));
 
-    m_State.xCoord = round(m_State.xCoord * 100.0) / 100.0;
-    if (m_State.xCoord == -0.0)
+    m_Point.xCoord = round(m_Point.xCoord * 10000.0) / 10000.0;
+    if (m_Point.xCoord == -0.0)
     {
-        m_State.xCoord = 0.0;
+        m_Point.xCoord = 0.0;
     }
 
-    m_State.yCoord = round(m_State.yCoord * 100.0) / 100.0;
-    if (m_State.yCoord == -0.0)
+    m_Point.yCoord = round(m_Point.yCoord * 10000.0) / 10000.0;
+    if (m_Point.yCoord == -0.0)
     {
-        m_State.yCoord = 0.0;
+        m_Point.yCoord = 0.0;
     }
 
 
@@ -47,14 +49,14 @@ void Turtle::moveForward(double steps = 1.0)
 
 void Turtle::turn(double orientation)
 {
-    m_State.orientation += orientation;
-    while (m_State.orientation >= 360) {m_State.orientation -= 360;}
-    while (m_State.orientation <= -360) {m_State.orientation += 360;}
+    m_Point.orientation += orientation;
+    while (m_Point.orientation >= 360) {m_Point.orientation -= 360;}
+    while (m_Point.orientation <= -360) {m_Point.orientation += 360;}
 }
 
-State Turtle::getLocation()
+Point Turtle::getLocation()
 {
-    return m_State;
+    return m_Point;
 }
 
 std::string Turtle::readSeqFromFile(ifstream &inputFile)
@@ -70,41 +72,47 @@ std::string Turtle::readSeqFromFile(ifstream &inputFile)
 
 //Get a string of 'A's 'B's 'L's and 'R's and follow it's command.
 // 'A' or 'B': move forward
-// 'L': Save state to memory then turn left 40 degrees
-// 'R': Return to last saved state (after an L), return to that state and turn right.
+// 'L': Save Point to memory then turn left 40 degrees
+// 'R': Return to last saved Point (after an L), return to that Point and turn right.
 void Turtle::followSeq(std::string const &sequence)
 {
+    m_PointMemory.push_back(m_Point);
 
     for (const char c: sequence)
     {
-        m_PointMemory.push_back(m_State);
 
         switch(c)
         {
         case 'A': ;                                 // Fallthrough intentional A == B
-        case 'B': this->moveForward(1);
+        case 'B':
+
+            this->moveForward(m_Point.stepSize);
             std::cout << "Moved forward" << '\n';
             break;
         case 'L':
-            m_StateGoLeftMemory.push_back(m_State); // Save this state to go back to it when 'R'
-            this->turn(40);
-            std::cout << "Saved state to memory, turned Left" << '\n';
+            m_Point.stepSize *= 0.8;
+            m_PointGoLeftMemory.push_back(m_Point); // Save this Point to go back to it when 'R'
+            this->turn(-20);
+            std::cout << "Saved Point to memory, turned Left" << '\n';
             break;
         case 'R':
-            m_State = m_StateGoLeftMemory.back();   // Go back to the last state on vector
-            m_StateGoLeftMemory.pop_back();         // Remove used state from vector
-            this->turn(-40);
-            std::cout << "Went back to last saved state," <<
-                         "Removed state from memory , turned Right" << '\n';
+            m_Point = m_PointGoLeftMemory.back();   // Go back to the last Point on vector
+            m_PointGoLeftMemory.pop_back();         // Remove used Point from vector
+
+            this->turn(-100);
+            std::cout << "Went back to last saved Point, " <<
+                         "Removed Point from memory, turned Right" << '\n';
             break;
         default:
             assert(!"Did not get a correct command input: 'Missing ABLR' ");
         }
 
+        m_PointMemory.push_back(m_Point);
+
     }
 }
 
-vector<State> Turtle::getPoints()
+vector<Point> Turtle::getPoints()
 {
     return m_PointMemory;
 }

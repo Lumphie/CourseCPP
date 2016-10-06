@@ -6,22 +6,22 @@
 
 using namespace std;
 
-struct State
+struct Point
 {
     double xCoord = 0;
     double yCoord = 0;
     double orientation = 0;
+    double stepSize = 1;
 };
 
 class Turtle
 {
 
 private:
-    State m_State;
-    vector<State> m_StateGoLeftMemory;
-    vector<State> m_PointMemory;
+    Point m_Point;
+    vector<Point> m_PointGoLeftMemory;
+    vector<Point> m_PointMemory;
     std::string m_Sequence;
-
 
 public:
     Turtle();
@@ -29,10 +29,10 @@ public:
     void Reset();
     void moveForward(double steps);
     void turn(double orientation);
-    State getLocation();
+    Point getLocation();
     std::string readSeqFromFile(ifstream &inputFile);
     void followSeq(std::string const &sequence);
-    vector<State> getPoints();
+    vector<Point> getPoints();
 
 
 
