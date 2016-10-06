@@ -2,6 +2,8 @@
 #include <vector>
 #include <cmath>
 #include <cassert>
+#include <iostream>
+#include <fstream>
 
 using namespace std;
 
@@ -19,7 +21,7 @@ void Turtle::Reset()
     m_State.xCoord = 0;
     m_State.yCoord = 0;
     m_State.orientation = 0;
-    m_StateMemory.clear();
+    m_StateGoLeftMemory.clear();
 
 }
 
@@ -29,11 +31,17 @@ void Turtle::moveForward(double steps = 1.0)
     m_State.yCoord += steps * sin(TWOPI * (m_State.orientation / 360));
 
     m_State.xCoord = round(m_State.xCoord * 100.0) / 100.0;
-    if (m_State.xCoord == -0)
-        m_State.xCoord = 0;
+    if (m_State.xCoord == -0.0)
+    {
+        m_State.xCoord = 0.0;
+    }
+
     m_State.yCoord = round(m_State.yCoord * 100.0) / 100.0;
-    if (m_State.yCoord == -0)
-        m_State.yCoord = 0;
+    if (m_State.yCoord == -0.0)
+    {
+        m_State.yCoord = 0.0;
+    }
+
 
 }
 
@@ -49,13 +57,44 @@ State Turtle::getLocation()
     return m_State;
 }
 
-void Turtle::addStateToMem(State currentState)
+std::string Turtle::readSeqFromFile(ifstream &inputFile)
 {
-    m_StateMemory.push_back(currentState);
+
+    int seqNum{0};
+    int length{0};
+    std::string sequence;
+    inputFile >> seqNum >> length >> sequence;
+
+    return sequence;
 }
 
-void Turtle::removeStateFromMem()
+//Get a string of 'A's 'B's 'L's and 'R's and follow it's command.
+// 'A' or 'B': move forward
+// 'L': Save state to memory then turn left 40 degrees
+// 'R': Return to last saved state (after an L), return to that state and turn right.
+void Turtle::followSeq(std::string const &sequence)
 {
-    m_StateMemory.pop_back();
-}
 
+    for (const char c: sequence)
+    {
+        m_PointMemory.push_back(m_State);
+
+        switch(c)
+        {
+        case 'A': ;                                 // Fallthrough intentional A == B
+        case 'B': this->moveForward();
+            break;
+        case 'L':
+            m_StateGoLeftMemory.push_back(m_State); // Save this state to go back to it when 'R'
+            this->turn(-40);
+            break;
+        case 'R':
+            m_State = m_StateGoLeftMemory.back();   // Go back to the last state on vector
+            m_StateGoLeftMemory.pop_back();         // Remove used state from vector
+            this->turn(40); break;
+        default:
+            assert(!"Did not get a correct command input: 'Missing ABLR' ");
+        }
+
+    }
+}

@@ -2,6 +2,8 @@
 #define TURTLE_H
 
 #include <vector>
+#include <fstream>
+
 using namespace std;
 
 struct State
@@ -16,7 +18,10 @@ class Turtle
 
 private:
     State m_State;
-    vector<State> m_StateMemory;
+    vector<State> m_StateGoLeftMemory;
+    vector<State> m_PointMemory;
+    std::string m_Sequence;
+
 
 public:
     Turtle();
@@ -25,8 +30,9 @@ public:
     void moveForward(double steps);
     void turn(double orientation);
     State getLocation();
-    void addStateToMem(State currentState);
-    void removeStateFromMem();
+    std::string readSeqFromFile(ifstream &inputFile);
+    void followSeq(std::string const &sequence);
+
 
 
 };
