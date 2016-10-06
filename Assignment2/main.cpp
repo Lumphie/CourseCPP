@@ -18,17 +18,33 @@ int main()
 
     updateSeq(arterialSeq, numOfSequences);
 
-    Turtle turtle;
-    cout << "X: " << turtle.getLocation().xCoord << " Y: " << turtle.getLocation().yCoord << '\n';
+    ifstream myInputFileStream("sequence.csv");
 
-    int numOfMoves = 9;
-    for (int index = 0; index < numOfMoves; ++index)
-    {
-        turtle.turn(360/numOfMoves);
-        turtle.moveForward(1);
-        cout << "X: " << turtle.getLocation().xCoord << " Y: " << turtle.getLocation().yCoord <<
-                " alpha: " << turtle.getLocation().orientation << '\n';
-    }
+    cout << "Sequence 1:\n";
+    Turtle turtle1;
+    turtle1.followSeq(turtle1.readSeqFromFile(myInputFileStream));
+
+    cout << "\n\nSequence 2:\n";
+    Turtle turtle2;
+    turtle2.followSeq(turtle2.readSeqFromFile(myInputFileStream));
+
+    cout << "\n\nSequence 3:\n";
+    Turtle turtle3;
+    turtle3.followSeq(turtle3.readSeqFromFile(myInputFileStream));
+
+    cout << "\n\nSequence 4:\n";
+    Turtle turtle4;
+    turtle4.followSeq(turtle4.readSeqFromFile(myInputFileStream));
+
+    cout << "\n\nSequence 5:\n";
+    Turtle turtle5;
+    turtle5.followSeq(turtle5.readSeqFromFile(myInputFileStream));
+
+    cout << "\n\nSequence 6:\n";
+    Turtle turtle6;
+    turtle6.followSeq(turtle6.readSeqFromFile(myInputFileStream));
+
+
 
     return 0;
 }
