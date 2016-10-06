@@ -32,6 +32,7 @@ public:
     State getLocation();
     std::string readSeqFromFile(ifstream &inputFile);
     void followSeq(std::string const &sequence);
+    vector<State> getPoints();
 
 
 

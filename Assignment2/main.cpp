@@ -13,37 +13,43 @@ void printSeq(std::string seq, int seqNumber, ofstream &outputFile);
 int main()
 {
 
-    const int numOfSequences = 6;
+    const int numOfSequences = 7;
     std::string arterialSeq {"A"};
 
     updateSeq(arterialSeq, numOfSequences);
 
     ifstream myInputFileStream("sequence.csv");
 
-    cout << "Sequence 1:\n";
-    Turtle turtle1;
-    turtle1.followSeq(turtle1.readSeqFromFile(myInputFileStream));
+    ofstream myOutputFileStream("arterialtree.csv");
 
-    cout << "\n\nSequence 2:\n";
-    Turtle turtle2;
-    turtle2.followSeq(turtle2.readSeqFromFile(myInputFileStream));
+    for (int seqNum = 0; seqNum < numOfSequences; ++seqNum)
+    {
+        cout << "Sequence " << seqNum << ".\n";
+        Turtle turtle;
+        turtle.followSeq(turtle.readSeqFromFile(myInputFileStream));
+        //vector<State> finalPoints = turtle.getPoints();
+        //cout << finalPoints. << '\n';
+        vector<State> allPoints = turtle.getPoints();
 
-    cout << "\n\nSequence 3:\n";
-    Turtle turtle3;
-    turtle3.followSeq(turtle3.readSeqFromFile(myInputFileStream));
+        int index = 0;
+        for (const State state: allPoints)
+        {
+            cout << index + 1 << " X: " << state.xCoord << " Y: " << state.yCoord << '\n';
+            if (index % 2)
+                cout << '\n';
 
-    cout << "\n\nSequence 4:\n";
-    Turtle turtle4;
-    turtle4.followSeq(turtle4.readSeqFromFile(myInputFileStream));
+            if (seqNum == 6)
+            {
 
-    cout << "\n\nSequence 5:\n";
-    Turtle turtle5;
-    turtle5.followSeq(turtle5.readSeqFromFile(myInputFileStream));
+                myOutputFileStream << index + 1 << " " << state.xCoord << " " << state.yCoord << '\n';
+                if (index % 2)
+                    myOutputFileStream << '\n';
+            }
+            ++index;
 
-    cout << "\n\nSequence 6:\n";
-    Turtle turtle6;
-    turtle6.followSeq(turtle6.readSeqFromFile(myInputFileStream));
-
+        }
+        turtle.Reset();
+    }
 
 
     return 0;

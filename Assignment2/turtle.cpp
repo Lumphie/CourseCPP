@@ -87,13 +87,13 @@ void Turtle::followSeq(std::string const &sequence)
             break;
         case 'L':
             m_StateGoLeftMemory.push_back(m_State); // Save this state to go back to it when 'R'
-            this->turn(-40);
+            this->turn(40);
             std::cout << "Saved state to memory, turned Left" << '\n';
             break;
         case 'R':
             m_State = m_StateGoLeftMemory.back();   // Go back to the last state on vector
             m_StateGoLeftMemory.pop_back();         // Remove used state from vector
-            this->turn(40);
+            this->turn(-40);
             std::cout << "Went back to last saved state," <<
                          "Removed state from memory , turned Right" << '\n';
             break;
@@ -102,4 +102,9 @@ void Turtle::followSeq(std::string const &sequence)
         }
 
     }
+}
+
+vector<State> Turtle::getPoints()
+{
+    return m_PointMemory;
 }
