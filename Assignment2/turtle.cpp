@@ -92,14 +92,14 @@ void Turtle::followSeq(std::string const &sequence)
         case 'L':
             m_Point.stepSize *= 0.8;
             m_PointGoLeftMemory.push_back(m_Point); // Save this Point to go back to it when 'R'
-            this->turn(-20);
+            this->turn(40);
             std::cout << "Saved Point to memory, turned Left" << '\n';
             break;
         case 'R':
             m_Point = m_PointGoLeftMemory.back();   // Go back to the last Point on vector
             m_PointGoLeftMemory.pop_back();         // Remove used Point from vector
 
-            this->turn(-100);
+            this->turn(-40);
             std::cout << "Went back to last saved Point, " <<
                          "Removed Point from memory, turned Right" << '\n';
             break;
