@@ -11,6 +11,7 @@ using namespace std;
 void updateSeq(string &oldSeq, int numOfSequences);
 void exportSeq(std::string seq, int seqNumber, ofstream &outputFile);
 
+// When creating the graph in Excel make sure decimal point is set to '.' Or Excel won't recognize the output as numbers.
 
 int main()
 {
