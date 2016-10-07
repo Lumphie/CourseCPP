@@ -1,8 +1,10 @@
+#include "stdafx.h"
 #include <iostream>
 #include <vector>
 #include "turtle.h"
 #include <fstream>
 #include <cassert>
+#include <string>
 
 using namespace std;
 
