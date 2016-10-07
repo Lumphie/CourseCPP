@@ -1,9 +1,11 @@
+#include "stdafx.h"
 #include "turtle.h"
 #include <vector>
 #include <cmath>
 #include <cassert>
 #include <iostream>
 #include <fstream>
+#include <string>
 
 using namespace std;
 
