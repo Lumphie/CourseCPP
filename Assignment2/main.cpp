@@ -7,61 +7,60 @@
 using namespace std;
 
 void updateSeq(string &oldSeq, int numOfSequences);
-void printSeq(std::string seq, int seqNumber, ofstream &outputFile);
+void exportSeq(std::string seq, int seqNumber, ofstream &outputFile);
 
 
 int main()
 {
-
     const int numOfSequences = 7;
     std::string arterialSeq {"A"};
-
-    updateSeq(arterialSeq, numOfSequences);
-
+    updateSeq(arterialSeq, numOfSequences);                         // Step 1, create the sequence Si
+    cout << numOfSequences << " sequences created.\n\n";
     ifstream myInputFileStream("sequence.csv");
-
+    cout << "Created file arterialtree.csv\n\n";
     ofstream myOutputFileStream("arterialtree.csv");
 
     for (int seqNum = 0; seqNum < numOfSequences; ++seqNum)
-    {
-        cout << "Sequence " << seqNum << ".\n";
-        Turtle turtle;
-        turtle.followSeq(turtle.readSeqFromFile(myInputFileStream));
-        //vector<Point> finalPoints = turtle.getPoints();
-        //cout << finalPoints. << '\n';
-        vector<Point> allPoints = turtle.getPoints();
-
+    {                                                               // Step 2:
+        Turtle turtle;                                              // Create a Turtle called turtle
+        turtle.followSeq(turtle.readSeqFromFile(myInputFileStream));// Let it follow the sequence
+        vector<Point> allPoints = turtle.getPoints();               // in sequence.csv and
+                                                                    // put all the points in a vector.
         int index = 0;
         for (const Point point: allPoints)
         {
-            cout << index + 1 << " X: " << point.xCoord << " Y: " << point.yCoord << '\n';
-            if (index % 2)
-                cout << '\n';
-
             if (seqNum == 6)
             {
 
-                myOutputFileStream << index + 1 << " " << point.xCoord << " " << point.yCoord << '\n';
-                if (index % 2)
+                myOutputFileStream << index + 1                     // Write the coordinates from
+                                   << " " << point.xCoord           // all the start and end points
+                                   << " " << point.yCoord           // to file arterialtree.csv
+                                   << '\n';
+
+                if (index % 2)                                      // after 2 points leave a blank line
                     myOutputFileStream << '\n';
             }
             ++index;
 
         }
         turtle.Reset();
+        assert(turtle.getLocation().xCoord == 0.0);
+        assert(turtle.getLocation().yCoord == 0.0);
     }
+    cout << "Succesfully exported all coordinates to arterialtree.csv\n";
 
 
     return 0;
 }
 
-// update the sequence a number of times according to the production rule:
+// Update the sequence a number of times according to the production rule:
 // Replace every 'A' with "BLARA".
 void updateSeq(std::string &oldSeq, int numOfSequences)
 {
-    std::string tempSeq;
+    std::string tempSeq;                                            // temporary string just like assignment 1
     // Open a file with filename sequence.csv
     ofstream myOutputFileStream("sequence.csv");
+    cout << "\nCreated file sequence.csv\n\n";
 
     for (int index = 0; index < numOfSequences; ++index)
     {   
@@ -75,29 +74,26 @@ void updateSeq(std::string &oldSeq, int numOfSequences)
 
         }
 
-        // Copy the temporary vector to the old vector for new use.
+        // Copy the temporary string to the old string for new use.
         oldSeq = tempSeq;
         tempSeq.clear();
         assert(oldSeq != "");
         assert(tempSeq == "");
-        printSeq(oldSeq, index, myOutputFileStream);
+        exportSeq(oldSeq, index, myOutputFileStream);
 
     }
 
 }
 
-//Prints a sequence, its sequence number and its size.
 //Exports sequence number, size and sequence to outputFile
-void printSeq(std::string seq, int seqNumber, ofstream &outputFile)
+void exportSeq(std::string seq, int seqNumber, ofstream &outputFile)
 {
     assert(seq != "");
     outputFile << seqNumber + 1 << " " << static_cast<int>(seq.size()) << " ";
     for(int i = 0; i < static_cast<int>(seq.size()); ++i)
     {
-        cout << seq[i];
         outputFile << seq[i];
     }
 
-    cout << "\ni: " << seqNumber + 1 << " size: " << static_cast<int>(seq.size()) << "\n\n";
     outputFile << '\n';
 }

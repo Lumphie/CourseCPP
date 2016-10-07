@@ -6,12 +6,12 @@
 
 using namespace std;
 
-struct Point
+struct Point                                    // Struct not only holds X,Y and alpha
 {
     double xCoord = 0;
     double yCoord = 0;
     double orientation = 0;
-    double stepSize = 1;
+    double stepSize = 1;                        // but also the stepSize it has to take.
 };
 
 class Turtle
@@ -24,7 +24,7 @@ private:
     std::string m_Sequence;
 
 public:
-    Turtle();
+    Turtle();                                   // When creating a turtle use default constructor
 
     void Reset();
     void moveForward(double steps);
