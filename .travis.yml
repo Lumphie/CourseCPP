@@ -28,8 +28,10 @@ before_script:
   - sleep 3 # give xvfb some time to start
 
 # To simplify things, I copy all files to this root folder
+# and ruthlessly delete that folder
 before_script:
   - cp Assignment2/*.* .
+  - rm -rf Assignment2
 
 script: 
   - qmake
@@ -37,8 +39,6 @@ script:
   - ./Assignment2
   - ./get_code_cov.sh
   - codecov
-  - ./build_console.sh
-  - ./build_desktop.sh
   - ./do_oclint.sh
 
 after_success:
