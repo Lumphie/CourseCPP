@@ -2,7 +2,11 @@ TEMPLATE = app
 CONFIG += console c++11
 CONFIG -= app_bundle
 CONFIG -= qt
-QMAKE_CXXFLAGS += -Wpedantic -Wall -Werror -Weffc++ -Wextra
+
+#QMAKE_CXXFLAGS += -Wpedantic -Wall -Werror -Weffc++ -Wextra
+
+# GCC does not have pendantic flag
+QMAKE_CXXFLAGS += -Wall -Werror -Weffc++ -Wextra
 
 SOURCES += main.cpp \
     turtle.cpp
