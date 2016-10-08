@@ -1,0 +1,4 @@
+build-Assignment2-Desktop-Debug/
+*.pro.user
+*.o
+*.exe
