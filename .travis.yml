@@ -34,6 +34,7 @@ before_script:
 script: 
   - qmake
   - make
+  - ./Assignment2
   - ./get_code_cov.sh
   - codecov
   - ./build_console.sh
