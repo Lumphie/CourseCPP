@@ -7,6 +7,7 @@ CONFIG -= qt
 
 # GCC does not have pendantic flag
 QMAKE_CXXFLAGS += -Wall -Werror -Weffc++ -Wextra
+QMAKE_CXXFLAGS += -std=c++11
 
 SOURCES += main.cpp \
     turtle.cpp

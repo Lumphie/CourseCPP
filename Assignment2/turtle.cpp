@@ -1,4 +1,3 @@
-#include "stdafx.h"
 #include "turtle.h"
 #include <vector>
 #include <cmath>
@@ -11,6 +10,20 @@ using namespace std;
 
 double TWOPI = 2 * 3.14159265358979;
 
+/*
+RJCB: The code below gives me these compiler warnings on GCC:
+
+../Assignment2/turtle.cpp: In constructor 'Turtle::Turtle()':
+../Assignment2/turtle.cpp:13:1: error: 'Turtle::m_Point' should be initialized in the member initialization list [-Werror=effc++]
+ Turtle::Turtle() {Reset();}                                 // Default turtle is automatically reset
+ ^
+../Assignment2/turtle.cpp:13:1: error: 'Turtle::m_PointGoLeftMemory' should be initialized in the member initialization list [-Werror=effc++]
+../Assignment2/turtle.cpp:13:1: error: 'Turtle::m_PointMemory' should be initialized in the member initialization list [-Werror=effc++]
+../Assignment2/turtle.cpp:13:1: error: 'Turtle::m_Sequence' should be initialized in the member initialization list [-Werror=effc++]
+
+
+//ORIGINAL CODE
+
 Turtle::Turtle() {Reset();}                                 // Default turtle is automatically reset
 
 void Turtle::Reset()
@@ -22,6 +35,27 @@ void Turtle::Reset()
     m_PointMemory.clear();
     m_Point.stepSize = 1.0;
 
+}
+*/
+
+///RJCB: does initialize member variables in the right place
+Turtle::Turtle()
+  : m_Point(0.0, 0.0, 0.0, 1.0), //Point now also has a fine default constructor :-)
+    m_PointGoLeftMemory{},
+    m_PointMemory{},
+    m_Sequence{}
+{
+
+}
+
+void Turtle::Reset()
+{
+    m_Point.xCoord = 0.0;
+    m_Point.yCoord = 0.0;
+    m_Point.orientation = 0.0;
+    m_PointGoLeftMemory.clear();
+    m_PointMemory.clear();
+    m_Point.stepSize = 1.0;
 }
 
 void Turtle::moveForward(double steps = 1.0)
