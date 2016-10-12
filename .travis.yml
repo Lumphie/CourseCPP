@@ -34,8 +34,8 @@ script:
   - qmake
   - make
   - ./get_code_cov.sh
-  - codecov
   - cd ..
+  - codecov
   - ./do_oclint.sh
 
 after_success:
