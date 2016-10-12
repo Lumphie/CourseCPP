@@ -3,7 +3,6 @@
 #include <cstdlib>
 #include <cassert>
 #include <vector>
-#include <fstream>
 #include <algorithm>
 #include "random.h"
 #include "utils.h"
@@ -32,12 +31,12 @@ const double kOff   =   50.0;
 
 void addSubunit(int filament, double &lengthTube, std::vector<double> &lengthFilaments);
 void removeSubunit(int filament, double &lengthTube, std::vector<double> &lengthFilaments);
-void updateDX(std::vector<double> &dX, const std::vector<double> &lengthFilaments, double lengthTube);
+void updateDX(std::vector<double> &dX,
+              const std::vector<double> &lengthFilaments, double lengthTube);
 double determineDT(rnd::discrete_distribution &rates);
 
 int main()
 {
-    std::ofstream output("data.csv");
     rnd::set_seed();
 
     // initialise
@@ -46,9 +45,8 @@ int main()
     double lengthTube = d;
 
     for (int i = 0; i < nTotal; ++i)
-    {
         lengthFilaments[i] -= i*h;
-    }
+
     updateDX(dX, lengthFilaments, lengthTube);
 
     // for loop
@@ -62,14 +60,12 @@ int main()
                 rates[rate] = kOn * exp (-((force * dX[rate])/(kB*temp)));
             else
                 rates[rate] = kOff;
-
         }
-
         // determine waiting time and draw event
         const double dt = determineDT(rates);
         const Events event = static_cast<Events>(rates.sample());
 
-        // update population state
+        // update filaments state
         t += dt;
 
         if (event < nTotal)
@@ -80,19 +76,13 @@ int main()
 
         updateDX(dX, lengthFilaments, lengthTube);
 
-        //output << t << ' ' << lengthTube * 1e6 << ' '<< ((lengthTube - d) / t ) * 1e6 <<'\n';
-
-
         if (t > tsav)
         {
             std::cout << t << ' ' << lengthTube * 1e6 << ' '
                       << ((lengthTube - d) / t ) * 1e6 <<'\n';
-
             tsav += tStep;
-
         }
     }
-
     return 0;
 }
 
@@ -115,7 +105,8 @@ void removeSubunit(int filament, double &lengthTube, std::vector<double> &length
 }
 
 
-void updateDX(std::vector<double> &dX, const std::vector<double> &lengthFilaments, double lengthTube)
+void updateDX(std::vector<double> &dX,
+              const std::vector<double> &lengthFilaments, double lengthTube)
 {
     for (int i = 0; i < nTotal; ++i)
     {
