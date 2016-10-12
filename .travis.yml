@@ -36,7 +36,7 @@ before_script:
 script: 
   - qmake
   - make
-  - ./Assignment3
+  - ./assignment3
   - ./get_code_cov.sh
   - codecov
   - ./do_oclint.sh
