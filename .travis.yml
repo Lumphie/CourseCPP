@@ -30,13 +30,13 @@ before_script:
 # To simplify things, I copy all files to this root folder
 # and ruthlessly delete that folder
 before_script:
-  - cp Assignment2/*.* .
-  - rm -rf Assignment2
+  - cp Assignment3/*.* .
+  - rm -rf Assignment3
 
 script: 
   - qmake
   - make
-  - ./Assignment2
+  - ./Assignment3
   - ./get_code_cov.sh
   - codecov
   - ./do_oclint.sh
