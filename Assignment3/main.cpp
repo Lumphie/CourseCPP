@@ -17,7 +17,7 @@ enum Events {
 
 const int nTotal    =   13;         // total number of filaments
 const int eTotal    =   nTotal * 2; // total number of events
-const double tEnd   =   100.0;
+const double tEnd   =   10.0;
 const double tStep  =   1.0;
 
 const double d      =   8.0e-9;
@@ -32,6 +32,7 @@ const double kOff   =   50.0;
 void addSubunit(int filament, double &lengthTube, std::vector<double> &lengthFilaments);
 void removeSubunit(int filament, double &lengthTube, std::vector<double> &lengthFilaments);
 void updateDX(std::vector<double> &dX, const std::vector<double> &lengthFilaments, double lengthTube);
+double determineDT(rnd::discrete_distribution &rates);
 
 int main()
 {
@@ -54,24 +55,17 @@ int main()
     for (double t = 0.0, tsav = 0.0; t < tEnd;)
     {
         rnd::discrete_distribution rates(eTotal);
-            for (int rate = 0; rate < eTotal; ++rate)
-            {
-                if (rate < nTotal)
-                {
-                    rates[rate] = kOn * exp (-((force * dX[rate])/(kB*temp)));
-                }
-                else
-                    rates[rate] = kOff;
+        for (int rate = 0; rate < eTotal; ++rate)
+        {
+            if (rate < nTotal)
+                rates[rate] = kOn * exp (-((force * dX[rate])/(kB*temp)));
+            else
+                rates[rate] = kOff;
 
-            }
+        }
 
         // determine waiting time and draw event
-        double sum = 0.0;
-        for(int i = 0; i < nTotal; ++i)
-            sum += rates[i];
-
-        verify(sum > 0.0);
-        const double dt = rnd::exponential(sum);
+        const double dt = determineDT(rates);
         const Events event = static_cast<Events>(rates.sample());
 
         // update population state
@@ -81,7 +75,7 @@ int main()
             addSubunit(event, lengthTube, lengthFilaments);
 
         else
-            removeSubunit(event, lengthTube, lengthFilaments);
+            removeSubunit((event - nTotal), lengthTube, lengthFilaments);
 
         updateDX(dX, lengthFilaments, lengthTube);
 
@@ -113,10 +107,10 @@ void removeSubunit(int filament, double &lengthTube, std::vector<double> &length
     lengthFilaments[filament] -= d;
 
     if (lengthFilaments[filament] == lengthTube)
-        lengthTube = *std::max_element(lengthFilaments.begin(), lengthFilaments.end());
+        lengthTube = *max_element(lengthFilaments.begin(), lengthFilaments.end());
 
-    //if (lengthFilaments[filament] < 0.0)
-      //  lengthFilaments[filament] = d - filament*h;
+    if (lengthFilaments[filament] < 0.0)
+        lengthFilaments[filament] = d - filament*h;
 }
 
 
@@ -128,5 +122,14 @@ void updateDX(std::vector<double> &dX, const std::vector<double> &lengthFilament
         if (dX[i] < 0.0)
             dX[i] = 0.0;
     }
+}
 
+double determineDT(rnd::discrete_distribution &rates)
+{
+    double sum = 0.0;
+    for(int i = 0; i < nTotal; ++i)
+        sum += rates[i];
+
+    verify(sum > 0.0);
+    return rnd::exponential(sum);
 }
