@@ -4,6 +4,7 @@
 #include <cassert>
 #include <vector>
 #include <fstream>
+#include <algorithm>
 #include "random.h"
 #include "utils.h"
 
@@ -107,7 +108,7 @@ void removeSubunit(int filament, double &lengthTube, std::vector<double> &length
     lengthFilaments[filament] -= d;
 
     if (lengthFilaments[filament] == lengthTube)
-        lengthTube = *max_element(lengthFilaments.begin(), lengthFilaments.end());
+        lengthTube = *std::max_element(lengthFilaments.begin(), lengthFilaments.end());
 
     if (lengthFilaments[filament] < 0.0)
         lengthFilaments[filament] = d - filament*h;
