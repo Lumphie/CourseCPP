@@ -146,9 +146,11 @@ namespace rnd {
     }
 
     discrete_distribution::discrete_distribution(const int &sz) :
-    n(sz), pdf(std::vector<double>(sz, 0.0)), cdf(std::vector<double>(sz))
+    n(sz),
+    is_accumulated{false}, //RJCB
+    pdf(std::vector<double>(sz, 0.0)), cdf(std::vector<double>(sz))
     {
-        is_accumulated = false;
+        //is_accumulated = false; //RJCB
     }
 
     void discrete_distribution::accumulate()
