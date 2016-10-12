@@ -32,7 +32,7 @@ script:
   - cd Assignment3; qmake
   - cd Assignment3; make
   - cd Assignment3; ./assignment3
-  - cp get_code_cov.sh Assignment3
+  - cp get_code_cov.sh Assignment3/get_code_cov.sh
   - cd Assignment3; ./get_code_cov.sh
   - cd Assignment3; codecov
   - ./do_oclint.sh
