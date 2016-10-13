@@ -29,17 +29,15 @@ before_script:
   - sleep 3 # give xvfb some time to start
 
 script: 
-  - cp get_code_cov.sh Assignment3
-  - cd Assignment3; 
+  - mv Assignment3/*.* .
   - qmake
   - make
-  - ./get_code_cov.sh
-  - cd ..
-  - codecov
+  - #./get_code_cov.sh
+  - # codecov
   - ./do_oclint.sh
 
-after_success:
-  - bash <(curl -s https://codecov.io/bash)
+#after_success:
+#  - bash <(curl -s https://codecov.io/bash)
 
-after_failure:
-  - bash <(curl -s https://codecov.io/bash)
+#after_failure:
+#  - bash <(curl -s https://codecov.io/bash)
