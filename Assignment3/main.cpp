@@ -15,24 +15,10 @@ enum Events {
     f10Remove, f11Remove, f12Remove, f13Remove
 };
 
-const int nTotal    =   13;         // total number of filaments
-const int eTotal    =   nTotal * 2; // total number of events
-const double tEnd   =   10.0;
-const double tStep  =   1.0;
 
-const double d      =   8.0e-9;
-const double h      =   d / nTotal;
-const double force  =   0.0;
-const double temp   =   289;
-const double kB     =   1.38e-23;
-const double kOn    =   200.0;
-const double kOff   =   50.0;
-
-
-void addSubunit(int filament, double &lengthTube, std::vector<double> &lengthFilaments);
-void removeSubunit(int filament, double &lengthTube, std::vector<double> &lengthFilaments);
-void updateDX(std::vector<double> &dX,
-              const std::vector<double> &lengthFilaments, double lengthTube);
+double getLengthTube(const std::vector<double> &lengthFilaments);
+void removeSubunit(int filament, std::vector<double> &lengthFilaments, const double &d);
+void updateDX(std::vector<double> &dX, const double d, const std::vector<double> &lengthFilaments);
 double determineDT(rnd::discrete_distribution &rates);
 
 int main()
@@ -40,14 +26,28 @@ int main()
     rnd::set_seed();
 
     // initialise
+
+    const int nTotal    =   13;         // total number of filaments
+    const int eTotal    =   nTotal * 2; // total number of events
+    const double tEnd   =   1000.0;
+    const double tStep  =   100.0;
+
+    const double d      =   8.0e-9;
+    const double h      =   d / nTotal;
+    const double force  =   0.0;
+    const double temp   =   289.0;
+    const double kB     =   1.38e-23;
+    const double kOn    =   200.0;
+    const double kOff   =   50.0;
+
+
     std::vector<double> lengthFilaments(nTotal, d);
     std::vector<double> dX(nTotal, 0.0);
-    double lengthTube = d;
 
     for (int i = 0; i < nTotal; ++i)
         lengthFilaments[i] -= i*h;
 
-    updateDX(dX, lengthFilaments, lengthTube);
+    updateDX(dX, d, lengthFilaments);
 
     // for loop
 
@@ -69,48 +69,40 @@ int main()
         t += dt;
 
         if (event < nTotal)
-            addSubunit(event, lengthTube, lengthFilaments);
+            // Make filament 1 subunit longer.
+            lengthFilaments[event] += d;
 
         else
-            removeSubunit((event - nTotal), lengthTube, lengthFilaments);
+            removeSubunit((event - nTotal), lengthFilaments, d);
 
-        updateDX(dX, lengthFilaments, lengthTube);
+        updateDX(dX, d, lengthFilaments);
 
         if (t > tsav)
         {
-            std::cout << t << ' ' << lengthTube * 1e6 << ' '
-                      << ((lengthTube - d) / t ) * 1e6 <<'\n';
+            std::cout << t << ' ' << getLengthTube(lengthFilaments) * 1e6 << ' '
+                      << ((getLengthTube(lengthFilaments) - d) / t ) * 1e6 <<'\n';
             tsav += tStep;
         }
     }
     return 0;
 }
 
-void addSubunit(int filament, double &lengthTube, std::vector<double> &lengthFilaments)
+void removeSubunit(const int filament, std::vector<double> &lengthFilaments, const double &d)
 {
-    lengthFilaments[filament] += d;
-    if (lengthFilaments[filament] > lengthTube)
-            lengthTube = lengthFilaments[filament];
-}
-
-void removeSubunit(int filament, double &lengthTube, std::vector<double> &lengthFilaments)
-{
+    assert(filament >= 0 && filament < static_cast<int>(lengthFilaments.size()));
     lengthFilaments[filament] -= d;
 
-    if (lengthFilaments[filament] == lengthTube)
-        lengthTube = *std::max_element(lengthFilaments.begin(), lengthFilaments.end());
-
+    double h {d / static_cast<int>(lengthFilaments.size())};
     if (lengthFilaments[filament] < 0.0)
-        lengthFilaments[filament] = d - filament*h;
+        lengthFilaments[filament] = d - filament * h;
 }
 
 
-void updateDX(std::vector<double> &dX,
-              const std::vector<double> &lengthFilaments, double lengthTube)
+void updateDX(std::vector<double> &dX, const double d, const std::vector<double> &lengthFilaments)
 {
-    for (int i = 0; i < nTotal; ++i)
+    for (int i = 0; i < static_cast<int>(lengthFilaments.size()); ++i)
     {
-        dX[i] = d - (lengthTube - lengthFilaments[i]);
+        dX[i] = d - (getLengthTube(lengthFilaments) - lengthFilaments[i]);
         if (dX[i] < 0.0)
             dX[i] = 0.0;
     }
@@ -119,9 +111,17 @@ void updateDX(std::vector<double> &dX,
 double determineDT(rnd::discrete_distribution &rates)
 {
     double sum = 0.0;
-    for(int i = 0; i < nTotal; ++i)
+    for(int i = 0; i < static_cast<int>(rates.size()); ++i)
         sum += rates[i];
 
     verify(sum > 0.0);
     return rnd::exponential(sum);
+}
+
+double getLengthTube(const std::vector<double> &lengthFilaments)
+{
+    assert(static_cast<int>(lengthFilaments.size()) > 0);
+    return *std::max_element(lengthFilaments.begin(), lengthFilaments.end());
+
+
 }
