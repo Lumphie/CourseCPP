@@ -16,7 +16,7 @@ enum Events {
     f10Remove, f11Remove, f12Remove, f13Remove
 };
 
-void createInitialFilament(std::vector<double> &lengthFilaments, const double d);
+void createInitialFilaments(std::vector<double> &lengthFilaments, const double d);
 
 void createRates(
         rnd::discrete_distribution &rates,
@@ -53,48 +53,54 @@ int main()
 
     // initialise
 
-    const int nTotal        =   13;         // total number of filaments
-    const int eTotal        =   nTotal * 2; // total number of events
-    const double tEnd       =   200.0;
+    const int nTotal        =   13;             // total number of filaments
+    const double tEnd       =   200.0;          // minutes for every simulation
     const double maxRuns    =   10.0;
     const double maxForce   =   1.1e-11;
 
-    const double d          =   8.0e-9;
-    const double temp       =   289.0;
-    const double kB         =   1.38e-23;
-    const double kOn        =   200.0;
-    const double kOff       =   50.0;
+    const double d          =   8.0e-9;         // size of a subunit in meters
+    const double temp       =   289.0;          // temperature in kelvin
+    const double kB         =   1.3806485e-23;  // Boltzmann constant
+    const double kOn        =   200.0;          // Subunits / min added to a filament
+    const double kOff       =   50.0;           // Subunits / min removed from a filament
 
     std::ofstream myFile("data.csv");
 
+    // for loop for 10 runs for forces 0 - 1.1e-12 == 120 runs)
     for (double run = 0.0, force = 0.0; force < maxForce;)
     {
         std::vector<double> lengthFilaments(nTotal, d);
         std::vector<double> dX(nTotal, 0.0);
 
-        createInitialFilament(lengthFilaments, d);
+        createInitialFilaments(lengthFilaments, d);
         updateDX(dX, d, lengthFilaments);
-        double t = 0.0;
-        for (; t < tEnd;)
+
+        //For loop for simulating tEnd minutes
+        for (double t = 0.0; t < tEnd;)
         {
-            rnd::discrete_distribution rates(eTotal);
+            // Create discrete_distributions
+            rnd::discrete_distribution rates(nTotal * 2);
             createRates(rates, kOn, force, dX, kB, temp, kOff);
 
             // determine waiting time and draw event
             const double dt = determineDT(rates);
             const Events event = static_cast<Events>(rates.sample());
 
-            // update filaments state
+            // add passed time
             t += dt;
+
+            // update filaments state
             updateFilament(event, lengthFilaments, d, nTotal);
             updateDX(dX, d, lengthFilaments);
 
+            // Output when a run is over
             if (t >= tEnd)
             {
                 outputElongationRate(t, force, d, lengthFilaments, myFile);
                 ++run;
             }
 
+            // When a force has had maxruns start 10 new runs with a new force
             if (run >= maxRuns)
             {
                 run = 0.0;
@@ -109,8 +115,10 @@ int main()
 void removeSubunit(const int filament, std::vector<double> &lengthFilaments, const double &d)
 {
     assert(filament >= 0 && filament < static_cast<int>(lengthFilaments.size()));
+    // Remove a unit's length from the filament
     lengthFilaments[filament] -= d;
 
+    // if the filament becomes smaller than 0 reset the filament
     double h {d / static_cast<int>(lengthFilaments.size())};
     if (lengthFilaments[filament] < 0.0)
         lengthFilaments[filament] = d - filament * h;
@@ -123,6 +131,7 @@ void updateFilament(
         const int &nTotal
         )
 {
+    // if event 0 - 12 happens add a filament else remove 1
     if (event < nTotal)
         // Make filament 1 subunit longer.
         lengthFilaments[event] += d;
@@ -134,6 +143,9 @@ void updateFilament(
 
 void updateDX(std::vector<double> &dX, const double d, const std::vector<double> &lengthFilaments)
 {
+    assert(!dX.empty());
+    assert(!lengthFilaments.empty());
+    // Calculate all the dX for each filament
     for (int i = 0; i < static_cast<int>(lengthFilaments.size()); ++i)
     {
         dX[i] = d - (getLengthTube(lengthFilaments) - lengthFilaments[i]);
@@ -144,26 +156,33 @@ void updateDX(std::vector<double> &dX, const double d, const std::vector<double>
 
 double determineDT(rnd::discrete_distribution &rates)
 {
+    // Calculate the sum of all rates
     double sum = 0.0;
     for(int i = 0; i < static_cast<int>(rates.size()); ++i)
         sum += rates[i];
 
-    verify(sum > 0.0);
+    assert(sum > 0.0);
+    // pick a timestep between 0 and sum.
     return rnd::exponential(sum);
 }
 
 double getLengthTube(const std::vector<double> &lengthFilaments)
 {
-    assert(static_cast<int>(lengthFilaments.size()) > 0);
+    // return biggest filament
+    assert(!lengthFilaments.empty());
     return *std::max_element(lengthFilaments.begin(), lengthFilaments.end());
 }
 
-void createInitialFilament(std::vector<double> &lengthFilaments, const double d)
+void createInitialFilaments(std::vector<double> &lengthFilaments, const double d)
 {
+    assert(!lengthFilaments.empty());
+    // Initial Filaments should all be shifted d / numberOfFilaments down
+    // relative to left neighbour
     for (int i = 0; i < static_cast<int>(lengthFilaments.size()); ++i)
         lengthFilaments[i] -= i * (d / static_cast<int>(lengthFilaments.size()));
 }
 
+// Calculates all the rates in the rates file.
 void createRates(
         rnd::discrete_distribution &rates,
         const double kOn,
@@ -174,15 +193,19 @@ void createRates(
         const double kOff
         )
 {
+    assert(!dX.empty());
     for (int rate = 0; rate < static_cast<int>(rates.size()) ; ++rate)
     {
+        // First half of the rates get an adding rate
         if (rate < (static_cast<double>(rates.size()) / 2))
             rates[rate] = kOn * exp (-((force * dX[rate])/(kB*temp)));
+        //Second half gets a removing rate
         else
             rates[rate] = kOff;
     }
 }
 
+// Output elongation rate to myFile (force t elongationRate
 void outputElongationRate(
         const double &t,
         const double &force,
@@ -190,7 +213,9 @@ void outputElongationRate(
         const std::vector<double> &lengthFilaments,
         std::ofstream &myFile)
 {
-    std::cout << force << ' ' << t << ' ' << ((getLengthTube(lengthFilaments) - d) / t ) * 1e6 <<'\n';
+    assert(!lengthFilaments.empty());
+    std::cout << force << ' ' << t << ' '
+              << ((getLengthTube(lengthFilaments) - d) / t ) * 1e6 <<'\n';
 
     myFile << force << ' ' << t << ' ' << ((getLengthTube(lengthFilaments) - d) / t ) * 1e6 <<'\n';
 }
