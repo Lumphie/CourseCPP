@@ -65,9 +65,9 @@ template <class T> inline double sqr(const T &x) { return x * x; };
 #define verify(condition) \
 if (!(condition)) \
 { \
-	std::ostringstream oss; \
-	oss << "Assertion " << #condition << " failed on line " << __LINE__ << " in file " << __FILE__; \
-	error(CURRENT_FUNCTION, oss.str()); \
+        std::ostringstream oss; \
+        oss << "Assertion " << #condition << " failed on line " << __LINE__ << " in file " << __FILE__; \
+        error(CURRENT_FUNCTION, oss.str()); \
 }
 
 #endif //#ifndef utils_h
