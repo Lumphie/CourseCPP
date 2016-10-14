@@ -1,24 +1,25 @@
 /*=============================================================================================================
-                                                 utils.h
+utils.h
 ===============================================================================================================
 
- Miscellaneous utility routines
+Miscellaneous utility routines
 
- C++-code accompanying:
+C++-code accompanying:
 
-        xxx
+xxx
 
- Written by:
-        G. Sander van Doorn
-        Groningen Institute for Evolutionary Life Sciences (Gelifes)
-        University of Groningen
-        the Netherlands
+Written by:
+G. Sander van Doorn
+Groningen Institute for Evolutionary Life Sciences (Gelifes)
+University of Groningen
+the Netherlands
 
- Program version
-        dd/mm/yyyy	: xxx
+Program version
+dd/mm/yyyy	: xxx
 
 =============================================================================================================*/
 
+#define _CRT_SECURE_NO_WARNINGS
 
 #ifndef utils_h
 #define utils_h
@@ -62,11 +63,11 @@ template <class T> inline double sqr(const T &x) { return x * x; };
 #endif
 
 #define verify(condition) \
-if (! (condition)) \
+if (!(condition)) \
 { \
-    std::ostringstream oss; \
-    oss << "Assertion " << #condition << " failed on line " << __LINE__ << " in file " << __FILE__; \
-    error(CURRENT_FUNCTION, oss.str());\
+	std::ostringstream oss; \
+	oss << "Assertion " << #condition << " failed on line " << __LINE__ << " in file " << __FILE__; \
+	error(CURRENT_FUNCTION, oss.str()); \
 }
 
 #endif //#ifndef utils_h
